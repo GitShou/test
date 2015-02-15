@@ -1,7 +1,4 @@
-using namespace std;
 #include <Windows.h>
-#include <stdio.h>
-#include <iostream>
 #include "C_MemMng.h"
 
 
@@ -15,7 +12,7 @@ void main(void){
 	memMng->DispCnt();
 
 	while (!isEnd){
-		printf("ボタン押して(0 = 終わる, 1 = 欲しい, 2 = 返す)\n");
+		printf("番号入力して 0 = 終わる, 1 = 欲しい, 2 = 返す)\n");
 		//scanf_s(&btn, sizeof(char));
 
 		cin >> num;
@@ -27,7 +24,7 @@ void main(void){
 		case 1:
 			printf("いくつ欲しい？\n");
 			cin >> num;
-			memMng->GetObjectPtr(num, list->start, list->end);
+			memMng->GetObjectPtr(num, list);
 			memMng->DispCnt();
 
 			break;
@@ -36,6 +33,10 @@ void main(void){
 			list->start = list->start->next;
 			printf("先頭を返した\n");
 
+			break;
+
+		default:
+			printf("有効な番号を入力して\n");
 			break;
 		}
 	}

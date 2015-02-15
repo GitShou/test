@@ -32,10 +32,12 @@ private:
 public:
 	OBJECT* start;
 	OBJECT* end;
+	int objSum;
 
 	OBJ_LIST(){ 
 		start = new(OBJECT);
 		end = new(OBJECT);
+		objSum = 0;
 	};
 	~OBJ_LIST(){ 
 		del(start);

@@ -16,6 +16,8 @@ C_MemMng::C_MemMng(){
 		work->back = now;
 		now = work;
 	}
+	this->wait->objSum = objSum;
+
 }
 C_MemMng::~C_MemMng(){
 	delete(wait);
@@ -35,33 +37,34 @@ OBJECT* C_MemMng::RetEndPt(int qty){
 	return work;
 }
 
-void C_MemMng::GetObjectPtr(int qty, OBJECT* start, OBJECT* end){
-	OBJECT* workE = RetEndPt(qty);
-	if (workE == nullptr){
-		printf("MemMngError そんなに持ってねーわ\n");
+void C_MemMng::GetObjectPtr(int qty, OBJ_LIST* outObj){
+	OBJECT* workS, *workE;
+
+	outObj->end = workE = RetEndPt(qty);
+	if (outObj->end == nullptr){
+		cout << "MemMngError そんなに持ってねーわ\n";
 		return;
 	}
-	OBJECT* workS = this->wait->start;
+	outObj->start = workS = this->wait->start;
 
-	start = workS;
-	end = workE;
-
-	if (workE->next == nullptr){	// waitにオブジェクトが残っているかをチェック
+	if (outObj->end->next == nullptr){	// waitにオブジェクトが残っているかをチェック
 		this->wait->start = this->wait->end = nullptr;
 	} else{
-		this->wait->start = workE->next;
+		this->wait->start = outObj->end->next;
 	}
 
-	if (act->start == nullptr){		// actにオブジェクトが存在するかチェック
-		act->start = workS;
-		act->end = workE;
+	if (this->act->objSum == 0){		// actにオブジェクトが存在するかチェック
+		this->act->start = workS;
+		this->act->end = workE;
 	} else{
-		act->end->next = workS;
-		act->end = workE;
+		this->act->end->next = workS;
+		this->act->end = workE;
 	}
-	end->next = nullptr;
+	this->wait->objSum -= qty;
+	this->act->objSum += qty;
+	outObj->end->next = nullptr;
 
-	printf("%d個上げる\n",qty);
+	cout << "%d個上げる\n",qty;
 }
 
 void C_MemMng::RetObjectPtr(OBJECT* list){
@@ -81,6 +84,7 @@ void C_MemMng::RetObjectPtr(OBJECT* list){
 			work = work->next;
 		}
 	}
+	act->objSum--;
 
 	// waitリストに対象を追加する
 	list->back = wait->end;
@@ -90,10 +94,20 @@ void C_MemMng::RetObjectPtr(OBJECT* list){
 	if (wait->start == nullptr){
 		wait->start = list;
 	}
+	wait->objSum++;
 
+	this->DispCnt();
 }
 
 void C_MemMng::DispCnt(){
+
+	cout << "---------- sum値 ----------\n";
+	cout << "wait = " << this->wait->objSum << "個\n";
+	cout << "act = " << this->act->objSum << "個\n";
+
+
+
+	cout << "---------- リストカウント値 ----------\n";
 	int cnt = 0;
 	OBJECT* work;
 
@@ -104,7 +118,7 @@ void C_MemMng::DispCnt(){
 			cnt++;
 		}
 	}
-	printf("wait = %d個\n", cnt);
+	cout << "wait = " << cnt << "個\n";
 	cnt = 0;
 	if (act->start != nullptr){
 		work = this->act->start;
@@ -113,7 +127,8 @@ void C_MemMng::DispCnt(){
 			cnt++;
 		}
 	}
-	printf("act = %d個\n", cnt);
+	cout << "act = " << cnt << "個\n";
+
 
 
 }

@@ -1,3 +1,6 @@
+using namespace std;
+
+#include <iostream>
 #include<stdio.h>
 
 #include "VariableClass.h"
@@ -14,7 +17,7 @@ public:
 	C_MemMng();
 	~C_MemMng();
 
-	void GetObjectPtr(int qty, OBJECT* outStart, OBJECT* outEnd);
+	void GetObjectPtr(int qty, OBJ_LIST* outObj);
 	void RetObjectPtr(OBJECT* ret);
 
 	void DispCnt();
